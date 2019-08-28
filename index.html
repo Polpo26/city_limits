@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>City Limits map</title>
+    <!-- leaflet.css -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <!-- css -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- leaflet1.5.1 -->
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <!-- jquery3.4.1 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- turf@5 -->
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
+    <!-- data -->
+    <!-- City Limits -->
+    <script src="geoJSON/1_Manhattan.geojson"></script>
+    <script src="geoJSON/2_San_Francisco.geojson"></script>
+    <script src="geoJSON/3_Chicago.geojson"></script>
+    <script src="geoJSON/4_Boston.geojson"></script>
+    <script src="geoJSON/5_Austin.geojson"></script>
+    <script src="geoJSON/6_Los_Angeles.geojson"></script>
+    <script src="geoJSON/7_Madison.geojson"></script>
+    <script src="geoJSON/8_Charleston.geojson"></script>
+    <script src="geoJSON/9_Nashville.geojson"></script>
+    <script src="geoJSON/10_Dallas.geojson"></script>
+    <script src="geoJSON/11_Washington.geojson"></script>
+    <script src="geoJSON/12_Toronto.geojson"></script>
+    <script src="geoJSON/13_Philadelphia.geojson"></script>
+    <script src="geoJSON/14_Portland.geojson"></script>
+    <script src="geoJSON/15_Pittsburgh.geojson"></script>
+    <script src="geoJSON/16_San_Diego.geojson"></script>
+    <script src="geoJSON/17_New_Orleans.geojson"></script>
+    <script src="geoJSON/18_Brooklyn.geojson"></script>
+    <script src="geoJSON/19_Cincinnati.geojson"></script>
+    <script src="geoJSON/20_Rochester.geojson"></script>
+    <script src="geoJSON/21_Seattle.geojson"></script>
+    <script src="geoJSON/22_Detroit.geojson"></script>
+    <script src="geoJSON/23_Columbus.geojson"></script>
+    <script src="geoJSON/24_Atlanta.geojson"></script>
+    <script src="geoJSON/25_Minneapolis.geojson"></script>
+    <script src="geoJSON/26_Miami.geojson"></script>
+    <script src="geoJSON/27_Berkeley.geojson"></script>
+    <script src="geoJSON/28_Houston.geojson"></script>
+    <script src="geoJSON/29_Denver.geojson"></script>
+    <script src="geoJSON/30_Vancouver.geojson"></script>
+  </head>
+
+  <body>
+    <div id="map"></div>
+    <div id='selector_menu'>
+			<select id='selector'>
+
+        <!-- City Limits -->
+        <option value='manhattan' selected=selected>Manhattan</option>
+        <option value='san_Francisco'>San_Francisco</option>
+        <option value='chicago'>Chicago</option>
+        <option value='boston'>Boston</option>
+        <option value='austin'>Austin</option> -->
+        <option value='los_angeles'>Los Angeles</option>
+        <option value='madison'>Madison</option>
+        <option value='charleston'>Charleston</option>
+        <option value='nashville'>Nashville</option>
+        <option value='dallas'>Dallas</option>
+        <option value='washington'>Washington</option>
+        <option value='toronto'>Toronto</option>
+        <option value='philadelphia'>Philadelphia</option>
+        <option value='portland'>Portland</option>
+        <option value='pittsburgh'>Pittsburgh</option>
+        <option value='san_diego'>San Diego</option>
+        <option value='new_orleans'>New Orleans</option>
+        <option value='brooklyn'>Brooklyn</option>
+        <option value='cincinnati'>Cincinnati</option>
+        <option value='rochester'>Rochester</option>
+        <option value='seattle'>Seattle</option>
+        <option value='detroit'>Detroit</option>
+        <option value='columbus'>Columbus</option>
+        <option value='atlanta'>Atlanta</option>
+        <option value='minneapolis'>Minneapolis</option>
+        <option value='miami'>Miami</option>
+        <option value='berkley'>Berkley</option>
+        <option value='houston'>Houston</option>
+        <option value='denver'>Denver</option>
+        <option value='vancouver'>Vancouver</option>
+			</select>
+		</div>
+
+    <script type="text/javascript">
+     var start=0;
+
+     function ChangeMask(city){
+
+              if(start>0){ // I remove the control and the layers to recreate them every time I change the data except for the first time
+                map.removeControl(control);
+       			map.eachLayer(function(e){
+					//if not the tile layer
+					if (typeof e._url === "undefined"){
+						map.removeLayer(e);
+						}
+					});
+       			}
+
+        var layer = L.geoJSON(eval(city));
+        var layer_bounds = layer.getBounds();
+        var layer_mask = L.geoJSON(turf.mask(eval(city)),{
+          "fillOpacity": 0.8,
+          color: '#000000',
+          fillColor: "white",
+          weight: 0.1}
+          ).addTo(map);
+
+
+      overlays = {
+      "City Mask": layer_mask,
+      "City Boundary": layer
+     	 };
+
+      control = L.control.layers(basemaps, overlays, {
+        collapsed: false
+      });
+      control.addTo(map);
+       map.fitBounds(layer_bounds);
+      start++;
+      }
+
+      var map = L.map('map', {
+        center: [43.6625, 10.6364]
+      });
+
+      // http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+      var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      	maxZoom: 19,
+      	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      });
+
+      var Wikimedia = L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {
+      	attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
+      	minZoom: 1,
+      	maxZoom: 19
+      });
+      var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      	maxZoom: 17,
+      	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+      });
+
+      var Stamen_Toner = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
+      	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      	subdomains: 'abcd',
+      	minZoom: 0,
+      	maxZoom: 20,
+      	ext: 'png'
+      });
+
+      var basemaps = {
+        "OpenStreetMap": OpenStreetMap_Mapnik,
+        "Stamen Toner": Stamen_Toner,
+        "Wikimedia": Wikimedia,
+        "Esri WorldImagery": Esri_WorldImagery,
+        "OpenTopoMap": OpenTopoMap
+      };
+
+
+      // Adding a Scale Bar to the Map
+      L.control.scale({
+        position: 'bottomright',
+        'imperial': false
+      }
+        ).addTo(map);
+
+    $(document).ready(function(){
+
+     ChangeMask('manhattan');
+
+     $("#selector").change(function(){
+
+                      ChangeMask($(this).val());
+
+                    });
+     });
+
+
+    </script>
+  </body>
+</html>
